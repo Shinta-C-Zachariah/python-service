@@ -3,10 +3,10 @@ name: Python Service CI/CD
 on:
   push:
     branches: ["main"]
-  workflow_run:
-    workflows: ["Python Library CI"]
-    types:
-      - completed
+  pull_request:
+    branches: ["main"]
+  repository_dispatch:
+    types: [python-lib-updated]
 
 jobs:
   build-test-deploy:
