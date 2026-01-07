@@ -31,7 +31,9 @@ jobs:
         run: bandit -r . --exclude ./test
 
       - name: Run tests
-        run: pytest
+        run: |
+          export PYTHONPATH=$PWD
+          pytest
 
       - name: Docker build
         run: |
