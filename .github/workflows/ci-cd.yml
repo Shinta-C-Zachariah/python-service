@@ -1,0 +1,44 @@
+name: Python Service CI/CD
+
+on:
+  push:
+    branches: ["main"]
+  workflow_run:
+    workflows: ["Python Library CI"]
+    types:
+      - completed
+
+jobs:
+  build-test-deploy:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.9","3.10","3.11"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Security scan (Bandit)
+        run: bandit -r . --exclude ./test
+
+      - name: Run tests
+        run: pytest
+
+      - name: Docker build
+        run: |
+          docker build -t python-service:${{ matrix.python-version }} .
+
+      - name: Deploy placeholder
+        if: github.ref == 'refs/heads/main'
+        run: |
+          echo "Deploying python-service..."
+          echo "Health check..."
